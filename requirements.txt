@@ -33,3 +33,4 @@ pytube
 unstructured
 numexpr
 gradio
+ddgs>=1.0.0
