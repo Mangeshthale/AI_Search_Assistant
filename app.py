@@ -91,7 +91,7 @@ search = DuckDuckGoSearchRun(name="Search")
 # ---------------- SESSION STATE ----------------
 if "messages" not in st.session_state:
     st.session_state.messages = [
-        {"role": "assistant", "content": "Hey 👋 I'm your AI search assistant. Ask me anything!"}
+        {"role": "assistant", "content": "✨ Discover answers, insights, and research in seconds."}
     ]
 
 # ---------------- CHAT DISPLAY ----------------
