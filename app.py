@@ -6,7 +6,7 @@ from langchain_classic.agents import initialize_agent, AgentType
 from langchain_community.callbacks import StreamlitCallbackHandler
 
 # ---------------- PAGE CONFIG ----------------
-st.set_page_config(page_title="AI Search Chat", page_icon="🔎", layout="wide")
+st.set_page_config(page_title="AI Search Chat", page_icon="🤖", layout="wide")
 
 # ---------------- CUSTOM CSS ----------------
 st.markdown("""
@@ -61,7 +61,7 @@ section[data-testid="stSidebar"] {
 """, unsafe_allow_html=True)
 
 # ---------------- HEADER ----------------
-st.markdown('<div class="title">🔎 AI Search Assistant</div>', unsafe_allow_html=True)
+st.markdown('<div class="title">🤖 AI Search Assistant</div>', unsafe_allow_html=True)
 st.caption("Chat with AI + Web + Wikipedia + Arxiv")
 
 # ---------------- SIDEBAR ----------------
