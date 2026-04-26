@@ -1,11 +1,11 @@
-# AI Search Assistant — Multi-Source Intelligent Research Agent
+# AI Search Assistant - Multi-Source Intelligent Research Agent
 
 [![Python](https://img.shields.io/badge/python-3.10+-blue.svg)](https://www.python.org/)
 [![LangChain](https://img.shields.io/badge/LangChain-Agent-green)](https://langchain.com/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-Live-red)](https://searchenginellmandagents.streamlit.app/)
 [![Model](https://img.shields.io/badge/Groq-Llama%203.3%2070B-orange)](https://groq.com/)
 
-An autonomous AI research agent that routes your query to the **right source automatically** — DuckDuckGo for current news, Wikipedia for factual knowledge, and Arxiv for academic research — with real-time reasoning visualization.
+An autonomous AI research agent that routes your query to the **right source automatically** - DuckDuckGo for current news, Wikipedia for factual knowledge, and Arxiv for academic research - with real-time reasoning visualization.
 
 🔗 **[Live Demo](https://searchenginellmandagents.streamlit.app/)**
 
@@ -13,7 +13,7 @@ An autonomous AI research agent that routes your query to the **right source aut
 
 ## What Makes It Different From a Chatbot?
 
-A regular chatbot guesses. This agent **reasons, acts, and observes** — it decides which tool to use based on your query, executes the search, reads the result, and decides if it needs to search again. You can watch every step happen in real time.
+A regular chatbot guesses. This agent **reasons, acts, and observes** - it decides which tool to use based on your query, executes the search, reads the result, and decides if it needs to search again. You can watch every step happen in real time.
 
 ---
 
@@ -35,17 +35,17 @@ ReAct Agent (Llama 3.3 70B via Groq)
 ```
 
 The agent autonomously picks from 3 tools:
-- **DuckDuckGo** — current events, news, general web
-- **Wikipedia** — factual, encyclopedic knowledge
-- **Arxiv** — academic papers and research
+- **DuckDuckGo** - current events, news, general web
+- **Wikipedia** - factual, encyclopedic knowledge
+- **Arxiv** - academic papers and research
 
 ---
 
 ## Key Features
 
-- **Zero-Shot ReAct Agent** — no examples needed, reasons from scratch every query
-- **Automatic source selection** — agent picks the best tool based on query intent
-- **Real-time reasoning visualization** via StreamlitCallbackHandler — see the agent think
+- **Zero-Shot ReAct Agent** - no examples needed, reasons from scratch every query
+- **Automatic source selection** - agent picks the best tool based on query intent
+- **Real-time reasoning visualization** via StreamlitCallbackHandler - see the agent think
 - **Stateful multi-turn chat** with full session management
 - **Groq Llama 3.3 70B** for fast, high-quality responses
 - **Custom dark-themed UI** with configurable API key input
@@ -98,4 +98,4 @@ Or enter your API key directly in the sidebar when the app loads.
 
 ## Author
 
-**Mangesh Thale** — [LinkedIn](https://www.linkedin.com/in/mangesh-thale/) | [GitHub](https://github.com/Mangeshthale)
+**Mangesh Thale** - [LinkedIn](https://www.linkedin.com/in/mangesh-thale/) | [GitHub](https://github.com/Mangeshthale)
