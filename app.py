@@ -72,7 +72,17 @@ _arxiv_tool = ArxivQueryRun(
 _wiki_tool = WikipediaQueryRun(
     api_wrapper=WikipediaAPIWrapper(top_k_results=1, doc_content_chars_max=150)
 )
-search = DuckDuckGoSearchRun(name="Search")
+_search_tool = DuckDuckGoSearchRun(name="Search")
+
+
+def _safe_search_run(query: str) -> str:
+    try:
+        return _search_tool.run(query)
+    except Exception as e:
+        return f"Search failed ({e}). Try Wikipedia or Arxiv instead, or answer from general knowledge."
+
+
+search = Tool(name=_search_tool.name, description=_search_tool.description, func=_safe_search_run)
 
 
 def _safe_arxiv_run(query: str) -> str:
@@ -120,7 +130,7 @@ if prompt:
         groq_api_key=api_key,
         model_name="qwen/qwen3.6-27b",
         streaming=True,
-        reasoning_format="hidden"
+        reasoning_format="parsed"
     )
 
     tools = [search, arxiv, wiki]
