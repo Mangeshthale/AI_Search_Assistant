@@ -124,7 +124,7 @@ if prompt:
         # and get mis-parsed as part of a tool's Action Input (caused
         # malformed arxiv/search queries). "hidden" keeps reasoning
         # out of the content the ReAct parser reads.
-        model_kwargs={"reasoning_format": "hidden"}
+        reasoning_format="hidden"
     )
 
     tools = [search, arxiv, wiki]
