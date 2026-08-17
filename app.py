@@ -116,8 +116,9 @@ if prompt:
     # LLM
     llm = ChatGroq(
         groq_api_key=api_key,
-        model_name="llama-3.3-70b-versatile",
-        streaming=True
+        model_name="openai/gpt-oss-120b",
+        streaming=True,
+        model_kwargs={"reasoning_effort": "low"}
     )
 
     tools = [search, arxiv, wiki]
@@ -126,7 +127,7 @@ if prompt:
         tools,
         llm,
         agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        handling_parsing_errors=True
+        handle_parsing_errors=True
     )
 
     # Assistant response
