@@ -5,6 +5,7 @@ from langchain_groq import ChatGroq
 from langchain_community.utilities import ArxivAPIWrapper, WikipediaAPIWrapper
 from langchain_community.tools import ArxivQueryRun, WikipediaQueryRun, DuckDuckGoSearchRun
 from langchain_classic.agents import initialize_agent, AgentType
+from langchain_core.tools import Tool
 from langchain_community.callbacks import StreamlitCallbackHandler
 
 # ---------------- PAGE CONFIG ----------------
@@ -73,13 +74,44 @@ st.sidebar.info("💡 Supports:\n- Web Search\n- Wikipedia\n- Arxiv Papers")
 # ---------------- TOOLS ----------------
 # doc_content_chars_max trimmed to reduce per-call token usage
 # (helps stay under free-tier TPM limits)
-arxiv = ArxivQueryRun(
+_arxiv_tool = ArxivQueryRun(
     api_wrapper=ArxivAPIWrapper(top_k_results=1, doc_content_chars_max=150)
 )
-wiki = WikipediaQueryRun(
+_wiki_tool = WikipediaQueryRun(
     api_wrapper=WikipediaAPIWrapper(top_k_results=1, doc_content_chars_max=150)
 )
 search = DuckDuckGoSearchRun(name="Search")
+
+
+# Both arxiv and wikipedia occasionally fail with transient errors
+# (arxiv: HTTP redirect issues on the old http:// export endpoint;
+# wikipedia: empty/non-JSON responses under load). Without this
+# wrapper, either failure crashes the whole Streamlit app instead of
+# letting the agent gracefully fall back to another tool.
+def _safe_arxiv_run(query: str) -> str:
+    try:
+        return _arxiv_tool.run(query)
+    except Exception as e:
+        return f"Arxiv lookup failed ({e}). Try the Search tool instead."
+
+
+def _safe_wiki_run(query: str) -> str:
+    try:
+        return _wiki_tool.run(query)
+    except Exception as e:
+        return f"Wikipedia lookup failed ({e}). Try the Search tool instead."
+
+
+arxiv = Tool(
+    name=_arxiv_tool.name,
+    description=_arxiv_tool.description,
+    func=_safe_arxiv_run,
+)
+wiki = Tool(
+    name=_wiki_tool.name,
+    description=_wiki_tool.description,
+    func=_safe_wiki_run,
+)
 
 # ---------------- SESSION STATE ----------------
 if "messages" not in st.session_state:
