@@ -14,12 +14,10 @@ st.set_page_config(page_title="AI Search Chat", page_icon="🤖", layout="wide")
 # ---------------- CUSTOM CSS ----------------
 st.markdown("""
 <style>
-/* Background */
 .stApp {
     background-color: #0f172a;
     color: #e2e8f0;
 }
-/* Chat bubbles */
 .chat-user {
     background: #1e293b;
     padding: 12px;
@@ -34,21 +32,17 @@ st.markdown("""
     margin: 8px 0;
     border-left: 3px solid #38bdf8;
 }
-/* Title */
 .title {
     font-size: 2.2rem;
     font-weight: bold;
     color: #38bdf8;
 }
-/* Sidebar */
 section[data-testid="stSidebar"] {
     background-color: #020617;
 }
-/* Input box */
 .stChatInput input {
     border-radius: 10px !important;
 }
-/* Buttons */
 .stButton>button {
     background-color: #38bdf8;
     color: black;
@@ -72,8 +66,6 @@ st.sidebar.markdown("---")
 st.sidebar.info("💡 Supports:\n- Web Search\n- Wikipedia\n- Arxiv Papers")
 
 # ---------------- TOOLS ----------------
-# doc_content_chars_max trimmed to reduce per-call token usage
-# (helps stay under free-tier TPM limits)
 _arxiv_tool = ArxivQueryRun(
     api_wrapper=ArxivAPIWrapper(top_k_results=1, doc_content_chars_max=150)
 )
@@ -83,11 +75,6 @@ _wiki_tool = WikipediaQueryRun(
 search = DuckDuckGoSearchRun(name="Search")
 
 
-# Both arxiv and wikipedia occasionally fail with transient errors
-# (arxiv: HTTP redirect issues on the old http:// export endpoint;
-# wikipedia: empty/non-JSON responses under load). Without this
-# wrapper, either failure crashes the whole Streamlit app instead of
-# letting the agent gracefully fall back to another tool.
 def _safe_arxiv_run(query: str) -> str:
     try:
         return _arxiv_tool.run(query)
@@ -102,16 +89,8 @@ def _safe_wiki_run(query: str) -> str:
         return f"Wikipedia lookup failed ({e}). Try the Search tool instead."
 
 
-arxiv = Tool(
-    name=_arxiv_tool.name,
-    description=_arxiv_tool.description,
-    func=_safe_arxiv_run,
-)
-wiki = Tool(
-    name=_wiki_tool.name,
-    description=_wiki_tool.description,
-    func=_safe_wiki_run,
-)
+arxiv = Tool(name=_arxiv_tool.name, description=_arxiv_tool.description, func=_safe_arxiv_run)
+wiki = Tool(name=_wiki_tool.name, description=_wiki_tool.description, func=_safe_wiki_run)
 
 # ---------------- SESSION STATE ----------------
 if "messages" not in st.session_state:
@@ -134,28 +113,13 @@ if prompt:
         st.error("⚠️ Please enter your Groq API key first.")
         st.stop()
 
-    # Add user message
     st.session_state.messages.append({"role": "user", "content": prompt})
     st.markdown(f'<div class="chat-user">{prompt}</div>', unsafe_allow_html=True)
 
-    # LLM — Llama 3.3 70B is deprecated on Groq; qwen3.6-27b is the
-    # closest drop-in replacement for ZERO_SHOT_REACT_DESCRIPTION agents
-    # since it doesn't fight the plain-text ReAct format the way
-    # openai/gpt-oss models do (they force native tool-calling).
-    # NOTE: qwen3.6-27b is currently in Groq's Preview tier, which Groq
-    # says "may be discontinued at short notice." If it gets deprecated,
-    # the next best fallback is openai/gpt-oss-120b, but that will
-    # require migrating off ZERO_SHOT_REACT_DESCRIPTION to a native
-    # tool-calling agent (e.g. langchain.agents.create_agent).
     llm = ChatGroq(
         groq_api_key=api_key,
         model_name="qwen/qwen3.6-27b",
         streaming=True,
-        # qwen3.6 is a reasoning model — without this, its internal
-        # <think>...</think> trace can leak into the visible content
-        # and get mis-parsed as part of a tool's Action Input (caused
-        # malformed arxiv/search queries). "hidden" keeps reasoning
-        # out of the content the ReAct parser reads.
         reasoning_format="hidden"
     )
 
@@ -164,11 +128,16 @@ if prompt:
         tools,
         llm,
         agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
-        handle_parsing_errors=True,
-        max_iterations=5  # enough headroom for broader, multi-step questions
+        handle_parsing_errors=(
+            "Invalid format. You must respond with EITHER:\n"
+            "Thought: <reasoning>\nAction: <tool name>\nAction Input: <input>\n"
+            "OR, if you already have enough information:\n"
+            "Thought: <reasoning>\nFinal Answer: <answer>"
+        ),
+        max_iterations=6,
+        early_stopping_method="generate",
     )
 
-    # Assistant response
     with st.spinner("Thinking... 🤔"):
         with st.container():
             st_cb = StreamlitCallbackHandler(st.container(), expand_new_thoughts=False)
@@ -176,7 +145,6 @@ if prompt:
                 response = agent.run(prompt, callbacks=[st_cb])
             except APIStatusError as e:
                 if "rate_limit_exceeded" in str(e):
-                    # brief backoff then a single retry
                     time.sleep(5)
                     try:
                         response = agent.run(prompt, callbacks=[st_cb])
@@ -188,6 +156,5 @@ if prompt:
                 else:
                     response = f"⚠️ An API error occurred: {e}"
 
-    # Store + display
     st.session_state.messages.append({"role": "assistant", "content": response})
     st.markdown(f'<div class="chat-assistant">{response}</div>', unsafe_allow_html=True)
