@@ -47,7 +47,7 @@ The agent autonomously picks from 3 tools:
 - **Automatic source selection** - agent picks the best tool based on query intent
 - **Real-time reasoning visualization** via StreamlitCallbackHandler - see the agent think
 - **Stateful multi-turn chat** with full session management
-- **Groq Llama 3.3 70B** for fast, high-quality responses
+- **Groq Qwen3.6-27B** for fast, high-quality responses
 - **Custom dark-themed UI** with configurable API key input
 
 ---
@@ -57,7 +57,7 @@ The agent autonomously picks from 3 tools:
 | Component | Technology |
 |---|---|
 | Agent Framework | LangChain Zero-Shot ReAct |
-| LLM | Groq (Llama 3.3 70B) |
+| LLM | Groq (Qwen3.6-27B) |
 | Tools | DuckDuckGoSearchRun, WikipediaQueryRun, ArxivQueryRun |
 | Streaming | StreamlitCallbackHandler |
 | UI | Streamlit |
