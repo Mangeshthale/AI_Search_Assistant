@@ -118,7 +118,7 @@ if prompt:
         groq_api_key=api_key,
         model_name="openai/gpt-oss-120b",
         streaming=True,
-        model_kwargs={"reasoning_effort": "low"}
+        reasoning_effort="low"
     )
 
     tools = [search, arxiv, wiki]
