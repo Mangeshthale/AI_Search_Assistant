@@ -118,7 +118,13 @@ if prompt:
     llm = ChatGroq(
         groq_api_key=api_key,
         model_name="qwen/qwen3.6-27b",
-        streaming=True
+        streaming=True,
+        # qwen3.6 is a reasoning model — without this, its internal
+        # <think>...</think> trace can leak into the visible content
+        # and get mis-parsed as part of a tool's Action Input (caused
+        # malformed arxiv/search queries). "hidden" keeps reasoning
+        # out of the content the ReAct parser reads.
+        model_kwargs={"reasoning_format": "hidden"}
     )
 
     tools = [search, arxiv, wiki]
@@ -127,7 +133,7 @@ if prompt:
         llm,
         agent=AgentType.ZERO_SHOT_REACT_DESCRIPTION,
         handle_parsing_errors=True,
-        max_iterations=3  # caps loop length to control token usage
+        max_iterations=5  # enough headroom for broader, multi-step questions
     )
 
     # Assistant response
