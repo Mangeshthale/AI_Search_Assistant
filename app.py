@@ -129,7 +129,7 @@ if prompt:
     llm = ChatGroq(
         groq_api_key=api_key,
         model_name="qwen/qwen3.6-27b",
-        streaming=True,
+        streaming=False,
         reasoning_format="parsed"
     )
 
