@@ -3,7 +3,7 @@ langchain
 langchain-community
 langchain-groq
 duckduckgo-search
-arxiv
+arxiv==1.4.8
 wikipedia
 python-dotenv
 ddgs
