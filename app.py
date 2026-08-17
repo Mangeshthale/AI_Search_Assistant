@@ -116,9 +116,8 @@ if prompt:
     # LLM
     llm = ChatGroq(
         groq_api_key=api_key,
-        model_name="openai/gpt-oss-120b",
-        streaming=True,
-        reasoning_effort="low"
+        model_name="qwen/qwen3.6-27b",
+        streaming=True
     )
 
     tools = [search, arxiv, wiki]
